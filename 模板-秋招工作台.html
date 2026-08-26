@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>【你的名字】 · 2027届秋招工作台</title>
+<style>
+:root { --primary:#0984e3; --success:#00b894; --danger:#d63031; --warning:#fdcb6e; --card-bg:#fff; --text:#2d3436; --text-secondary:#636e72; --border:#dfe6e9; --shadow:0 2px 12px rgba(0,0,0,0.08); --radius:12px; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'PingFang SC','Microsoft YaHei',sans-serif; background:#f5f6fa; color:var(--text); }
+.header { background:linear-gradient(135deg,#2d3436,#636e72); color:#fff; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-radius:16px; margin:20px auto; max-width:1600px; box-shadow:0 4px 16px rgba(0,0,0,.08); }
+.header-left { display:flex; align-items:center; gap:14px; }
+.header .logo { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#74b9ff,#a29bfe); display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 2px 6px rgba(0,0,0,.2); }
+.header h1 { font-size:20px; }
+.subtitle { font-size:12px; opacity:0.9; margin-top:4px; }
+.header-right { display:flex; gap:8px; flex-wrap:wrap; }
+.btn { padding:7px 14px; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:4px; }
+.btn-primary { background:#0984e3; color:#fff; }
+.btn-primary:hover { background:#0773c5; }
+.btn-outline { background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,.4); }
+.btn-outline:hover { background:rgba(255,255,255,.1); }
+.header-right .btn { border-radius:999px; padding:7px 16px; }
+.btn-danger { background:#d63031; color:#fff; }
+.btn-danger:hover { background:#c02323; }
+.btn-sm { padding:4px 9px; font-size:12px; }
+.container { max-width:1600px; margin:0 auto; padding:20px; }
+.tabs { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; background:#fff; padding:10px; border-radius:14px; box-shadow:var(--shadow); }
+.tab-btn { flex:1; min-width:120px; padding:11px 10px; border:none; border-radius:999px; background:transparent; color:var(--text-secondary); font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; text-align:center; }
+.tab-btn.active { background:var(--primary); color:#fff; box-shadow:0 2px 8px rgba(9,132,227,.3); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+.stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:16px; }
+.stat-card { background:var(--card-bg); border-radius:var(--radius); padding:14px; text-align:center; box-shadow:var(--shadow); }
+.stat-card .num { font-size:24px; font-weight:700; color:var(--primary); }
+.stat-card .label { font-size:12px; color:var(--text-secondary); margin-top:4px; }
+.filters { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; align-items:center; }
+.filters select, .filters input { padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; }
+.filters input[type=text] { flex:1; min-width:200px; }
+.sort-group { display:flex; gap:6px; }
+.sort-group .btn { background:#fff; color:var(--text); box-shadow:var(--shadow); }
+.sort-group .btn.active { background:var(--primary); color:#fff; }
+.table-wrapper { background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow); overflow:auto; max-height:72vh; }
+table { width:100%; border-collapse:collapse; min-width:1500px; }
+th { background:#f8f9fa; padding:12px 10px; text-align:left; font-size:13px; font-weight:700; color:var(--text-secondary); border-bottom:2px solid var(--border); white-space:nowrap; position:sticky; top:0; z-index:1; }
+td { padding:9px 10px; font-size:13px; border-bottom:1px solid var(--border); vertical-align:middle; }
+tr:hover { background:#f8f9ff; }
+tr.row-inactive td { color:#b2bec3; }
+tr.row-broken td { color:#d63031; }
+tr.row-broken { background:#fff5f5; }
+tr.row-mismatch td { color:#b2bec3; }
+tr.row-mismatch { background:#fafafa; }
+.tag { display:inline-block; padding:2px 9px; border-radius:12px; font-size:12px; font-weight:600; white-space:nowrap; }
+.tag-央企,.tag-国企,.tag-事业单位 { background:#ffeaa7; color:#d63031; }
+.tag-国有控股,.tag-合资 { background:#dfe6e9; color:#2d3436; }
+.tag-私企,.tag-民企 { background:#dff9fb; color:#0984e3; }
+.tag-外企 { background:#e8f6ff; color:#0984e3; }
+.link { color:var(--primary); text-decoration:none; word-break:break-all; }
+.link:hover { text-decoration:underline; }
+.pagination { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:12px 0; }
+.page-btn { padding:6px 12px; border:1.5px solid var(--border); background:#fff; border-radius:6px; cursor:pointer; font-size:13px; }
+.page-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.page-btn:disabled { opacity:.4; cursor:default; }
+.page-info { font-size:13px; color:var(--text-secondary); }
+.page-size select { padding:5px 8px; border:1.5px solid var(--border); border-radius:6px; font-size:13px; }
+.resource-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-bottom:20px; }
+.rsrc-card { display:flex; gap:12px; align-items:center; background:var(--card-bg); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); border-left:4px solid var(--primary); transition:transform .15s; }
+.rsrc-card:hover { transform:translateY(-2px); }
+.rsrc-icon { font-size:26px; }
+.rsrc-name { font-size:14px; font-weight:700; }
+.rsrc-desc { font-size:12px; color:var(--text-secondary); margin-top:3px; }
+.checkin-card { background:var(--card-bg); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); margin-bottom:14px; }
+.phase-tabs { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+.phase-tab { padding:7px 14px; border:1.5px solid var(--border); background:#fff; border-radius:8px; cursor:pointer; font-size:12px; }
+.phase-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.day-card { background:#f8f9fa; border-radius:10px; padding:12px; margin-bottom:10px; }
+.day-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px; }
+.day-head .date { font-weight:700; font-size:14px; }
+.task-label { display:flex; align-items:flex-start; gap:8px; background:#fff; border-radius:8px; padding:8px 12px; margin-bottom:6px; cursor:pointer; font-size:13px; flex-wrap:wrap; }
+.task-label input { margin-top:3px; }
+.task-label .task-meta { font-size:11px; color:var(--text-secondary); }
+.note-cell { word-break:break-all; }
+.match-panel { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.match-left, .match-right { background:var(--card-bg); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); }
+.match-right { position:sticky; top:20px; align-self:start; }
+.match-item { margin-bottom:12px; }
+.match-item label { font-size:13px; font-weight:600; display:block; margin-bottom:4px; }
+.match-item select, .match-item input { width:100%; padding:7px 10px; border:1.5px solid var(--border); border-radius:6px; font-size:13px; }
+.badge { display:inline-block; padding:3px 12px; border-radius:20px; font-size:20px; font-weight:800; }
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:100; justify-content:center; align-items:center; }
+.modal-overlay.active { display:flex; }
+.modal { background:#fff; border-radius:var(--radius); padding:24px; width:min(480px,92vw); max-height:88vh; overflow:auto; position:relative; }
+.modal h2 { margin-bottom:16px; font-size:17px; }
+.modal .close-x { position:absolute; top:12px; right:14px; font-size:20px; cursor:pointer; color:var(--text-secondary); border:none; background:none; }
+.form-group { margin-bottom:12px; }
+.form-group label { font-size:13px; font-weight:600; display:block; margin-bottom:4px; }
+.form-group input, .form-group select { width:100%; padding:8px 10px; border:1.5px solid var(--border); border-radius:6px; font-size:13px; }
+.external-banner { background:linear-gradient(135deg,#a29bfe,#d6a3ff); color:#fff; padding:12px 18px; border-radius:10px; margin-bottom:16px; font-size:14px; }
+.external-banner a { color:#fff; font-weight:700; text-decoration:underline; }
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#2d3436; color:#fff; padding:10px 22px; border-radius:8px; font-size:13px; z-index:999; opacity:0; transition:opacity .3s; pointer-events:none; }
+.toast.show { opacity:1; }
+@media (max-width:900px) { .match-panel { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">🎯</div>
+    <div>
+      <h1>【你的名字】 · 2027届秋招工作台</h1>
+      <div class="subtitle">【你的学校】 · 【你的专业】 · 目标岗位：【你的目标岗位】 | 理想城市：【你的意向城市】</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <a class="btn btn-outline btn-sm" href="https://example.com/你的简历模板" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:inline-flex;">📄 简历模板</a>
+    <button class="btn btn-outline btn-sm" onclick="saveDataToFile()">💾 保存数据</button>
+    <button class="btn btn-outline btn-sm" onclick="loadDataFromFile()">📂 打开数据</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(this)">
+    <button class="btn btn-outline btn-sm" onclick="resetAllData()">🔄 重置全部</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('tracking',this)">📋 投递追踪</button>
+    <button class="tab-btn" onclick="switchTab('timeline',this)">⏱ 秋招时间线</button>
+    <button class="tab-btn" onclick="switchTab('preparation',this)">📝 备考中心</button>
+    <button class="tab-btn" onclick="switchTab('match',this)">🎯 岗位匹配</button>
+  </div>
+
+  <!-- TAB 1: 投递追踪 -->
+  <div class="tab-content active" id="tab-tracking">
+    <a href="https://acnr1ayjzqxf.feishu.cn/base/ISNobVuXAagJBFssvszcYeqQnfb?table=tblh7J5ONBOMBEK8&view=vew0zSgYvA" target="_blank" rel="noopener" style="text-decoration:none;">
+      <div class="external-banner">📊 外部：别人整理的秋招投递表（飞书多维表格）→ 点击跳转</div>
+    </a>
+    <div class="stats-row" id="statsRow"></div>
+    <div class="filters">
+      <select id="cityFilter" onchange="resetToPage1();renderTable()">
+        <option value="all">📍 全部城市</option>
+        <option value="成都">⭐ 成都</option>
+        <option value="重庆">⭐ 重庆</option>
+        <option value="北京">北京</option><option value="上海">上海</option>
+        <option value="深圳">深圳</option><option value="武汉">武汉</option>
+        <option value="杭州">杭州</option><option value="广州">广州</option>
+        <option value="苏州">苏州</option><option value="西安">西安</option>
+        <option value="待查询">待查询</option>
+      </select>
+      <select id="typeFilter" onchange="resetToPage1();renderTable()">
+        <option value="all">🏢 全部性质</option>
+        <option value="央企">央企</option><option value="国企">国企</option>
+        <option value="国有控股">国有控股</option><option value="合资">合资</option>
+        <option value="私企">私企</option><option value="外企">外企</option>
+        <option value="事业单位">事业单位</option>
+      </select>
+      <select id="statusFilter" onchange="resetToPage1();renderTable()">
+        <option value="all">📌 全部状态</option>
+        <option value="未投递">未投递</option>
+        <option value="已投递">已投递</option>
+        <option value="测评中">测评中</option>
+        <option value="面试中">面试中</option>
+        <option value="已录用">已录用</option>
+        <option value="已拒绝">已拒绝</option>
+        <option value="未开启">🔒 未开启</option>
+        <option value="链接失效">⚠️ 链接失效</option>
+        <option value="岗位不符">❌ 岗位不符</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="🔍 搜索单位名称..." oninput="resetToPage1();renderTable()">
+      <div class="sort-group">
+        <button class="btn btn-sm active" onclick="setSort('city',this)">按城市</button>
+        <button class="btn btn-sm" onclick="setSort('type',this)">按性质</button>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="showAddModal()">➕ 添加单位</button>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>单位名称</th><th>性质</th><th>城市</th><th>工作地点</th><th>时间</th>
+            <th>网申链接</th><th>笔试</th><th>薪资</th><th>投递状态</th><th>备注</th><th>简历文件</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <!-- TAB 2: 时间线 -->
+  <div class="tab-content" id="tab-timeline">
+    <div class="checkin-card" id="timelineContent"></div>
+  </div>
+
+  <!-- TAB 3: 备考中心 -->
+  <div class="tab-content" id="tab-preparation">
+    <div class="resource-cards" id="resourceCards"></div>
+    <div class="checkin-card" id="checkinContent"></div>
+  </div>
+
+  <!-- TAB 4: 岗位匹配 -->
+  <div class="tab-content" id="tab-match">
+    <div class="match-panel">
+      <div class="match-left">
+        <div class="form-group"><label>公司名</label><input id="matchCompany" placeholder="如：华为"></div>
+        <div class="form-group"><label>岗位名</label><input id="matchJob" placeholder="如：嵌入式软件工程师"></div>
+        <div id="matchItems"></div>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="saveMatch()">💾 保存这条</button>
+          <button class="btn btn-danger" onclick="clearMatch()">清空</button>
+        </div>
+        <div id="matchHistory" style="margin-top:16px;"></div>
+      </div>
+      <div class="match-right" id="matchResult"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 添加单位弹窗 -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <button class="close-x" onclick="closeAddModal()">×</button>
+    <h2>➕ 添加新单位</h2>
+    <form id="addForm" onsubmit="addCompany(event)">
+      <div class="form-group"><label>单位名称 *</label><input id="addName" required></div>
+      <div class="form-group"><label>性质</label>
+        <select id="addType"><option>私企</option><option>国企</option><option>央企</option><option>国有控股</option><option>合资</option><option>外企</option><option>事业单位</option></select>
+      </div>
+      <div class="form-group"><label>城市</label>
+        <select id="addCity"><option>成都</option><option>重庆</option><option>北京</option><option>上海</option><option>深圳</option><option>其他</option></select>
+      </div>
+      <div class="form-group"><label>网申链接</label><input id="addLink" placeholder="https://..."></div>
+      <div class="form-group"><label>备注</label><input id="addNote"></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">保存</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==============================
+// 数据管理
+// ==============================
+const DATA_VERSION = 99;
+const defaultData = [];
+
+function getData() {
+  const s = localStorage.getItem('resume_tracker_data');
+  const v = localStorage.getItem('resume_tracker_version');
+  if (!s || parseInt(v || '0') < DATA_VERSION) {
+    const oldData = s ? JSON.parse(s) : [];
+    const merged = [...defaultData];
+    for (const nd of merged) {
+      const old = oldData.find(o => o.name === nd.name);
+      if (old) {
+        if (old.status !== '未投递') nd.status = old.status;
+        if (old.resume) nd.resume = old.resume;
+        if (old.note && !old.note.startsWith('📥')) nd.note = old.note;
+      }
+    }
+    for (const old of oldData) {
+      if (!merged.find(m => m.name === old.name)) {
+        if (old.note && old.note.startsWith('📥')) old.note = '';
+        merged.push(old);
+      }
+    }
+    saveData(merged);
+    localStorage.setItem('resume_tracker_version', String(DATA_VERSION));
+    return merged;
+  }
+  return JSON.parse(s);
+}
+function saveData(d) { localStorage.setItem('resume_tracker_data', JSON.stringify(d)); }
+
+// ==============================
+// 投递追踪：渲染
+// ==============================
+let currentPage = 1;
+let pageSize = 20;
+let currentSort = 'city';
+let editingLinkIdx = null;
+
+function resetToPage1() { currentPage = 1; editingLinkIdx = null; }
+
+function getFilteredData() {
+  let d = getData();
+  const cf = document.getElementById('cityFilter').value;
+  const tf = document.getElementById('typeFilter').value;
+  const sf = document.getElementById('statusFilter').value;
+  const st = document.getElementById('searchInput').value.toLowerCase();
+  if (cf !== 'all') d = d.filter(x => x.city === cf);
+  if (tf !== 'all') {
+    if (tf === '私企') d = d.filter(x => x.type === '私企' || x.type === '私企/民企' || x.type === '民企');
+    else d = d.filter(x => x.type === tf);
+  }
+  if (sf !== 'all') d = d.filter(x => x.status === sf);
+  if (st) d = d.filter(x => (x.name||'').toLowerCase().includes(st) || (x.note||'').toLowerCase().includes(st) || (x.city||'').toLowerCase().includes(st));
+  const to = { '央企':1, '事业单位':2, '国企':3, '国有控股':4, '合资':5, '私企':6, '私企/民企':6, '民企':6, '外企':7 };
+  const co = { '成都':1, '重庆':2, '北京':3, '上海':4, '深圳':5, '武汉':6, '杭州':7, '广州':8, '苏州':9, '西安':10 };
+  const grp = { '紫光系': 1 };
+  if (currentSort === 'city') d.sort((a,b) => (grp[a.group]||99)-(grp[b.group]||99) || (co[a.city]||99)-(co[b.city]||99) || (to[a.type]||9)-(to[b.type]||9) || (a.name||'').localeCompare(b.name||'','zh'));
+  else d.sort((a,b) => (grp[a.group]||99)-(grp[b.group]||99) || (to[a.type]||9)-(to[b.type]||9) || (co[a.city]||99)-(co[b.city]||99) || (a.name||'').localeCompare(b.name||'','zh'));
+  return d;
+}
+
+function renderTable() {
+  const allData = getFilteredData();
+  const totalPages = Math.ceil(allData.length / pageSize);
+  if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const data = allData.slice(start, start + pageSize);
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = data.map((d, i) => {
+    const gi = start + i;
+    const rowCls = d.status === '未开启' ? 'row-inactive' : d.status === '链接失效' ? 'row-broken' : d.status === '岗位不符' ? 'row-mismatch' : '';
+    const tagCls = 'tag-' + String(d.type || '私企').replace(/[\/\u6c11]/g, '');
+    return '<tr class="' + rowCls + '">'
+      + '<td>' + (gi + 1) + '</td>'
+      + '<td><strong>' + esc(d.name) + '</strong></td>'
+      + '<td><span class="tag ' + tagCls + '">' + esc(d.type || '-') + '</span></td>'
+      + '<td>' + esc(d.city || '-') + '</td>'
+      + '<td>' + esc(d.location || '-') + '</td>'
+      + '<td>' + esc(d.time || '-') + '</td>'
+      + '<td>' + renderLinkCell(d, gi) + '</td>'
+      + '<td>' + esc(d.exam || '-') + '</td>'
+      + '<td style="max-width:200px;word-break:break-all;">' + esc(d.salary || '-') + '</td>'
+      + '<td>' + renderStatusCell(d, gi) + '</td>'
+      + '<td style="max-width:200px;word-break:break-all;">' + esc(d.note || '-') + '</td>'
+      + '<td>' + renderResumeCell(d, gi) + '</td>'
+      + '<td><button class="btn btn-danger btn-sm" onclick="deleteRow(' + gi + ',event)" title="删除">🗑</button></td>'
+      + '</tr>';
+  }).join('');
+  if (data.length === 0) tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:40px;color:#b2bec3;">暂无匹配的投递记录</td></tr>';
+  renderPagination(allData.length, totalPages);
+  updateStats();
+}
+
+function renderLinkCell(d, gi) {
+  if (editingLinkIdx === gi) {
+    const v = esc(String(d.link || ''));
+    return '<div style="display:flex;gap:4px;align-items:center;min-width:300px;">'
+      + '<input id="linkEditInput" value="' + v + '" placeholder="粘贴正确的网申链接"'
+      + ' onkeydown="if(event.key===\'Enter\')saveLinkEdit(' + gi + ')"'
+      + ' style="flex:1;min-width:0;padding:4px 6px;border:1px solid var(--primary);border-radius:4px;font-size:12px;" />'
+      + '<button class="btn btn-primary btn-sm" onclick="saveLinkEdit(' + gi + ')" style="padding:2px 8px;">✓</button>'
+      + '<button class="btn btn-outline btn-sm" onclick="cancelLinkEdit()" style="padding:2px 8px;color:var(--text);border-color:var(--border);">✕</button>'
+      + '</div>';
+  }
+  const linkHtml = d.link ? formatLink(d.link) : '-';
+  const warn = d.status === '链接失效' ? '⚠️ ' : '';
+  return '<div style="display:flex;gap:4px;align-items:flex-start;min-width:200px;">'
+    + '<span style="flex:1;min-width:0;">' + warn + linkHtml + '</span>'
+    + '<button class="btn btn-outline btn-sm" onclick="startLinkEdit(' + gi + ')" title="编辑链接" style="padding:0 6px;color:var(--text-secondary);border-color:var(--border);">✏️</button>'
+    + '</div>';
+}
+
+function renderStatusCell(d, gi) {
+  const opts = ['未投递','已投递','测评中','面试中','已录用','已拒绝','未开启','链接失效','岗位不符'];
+  const icons = { '未开启':'🔒 ', '链接失效':'⚠️ ', '岗位不符':'❌ ' };
+  return '<select onchange="updateStatus(' + gi + ',this.value)" style="min-width:90px;">'
+    + opts.map(o => '<option value="' + o + '" ' + (d.status === o ? 'selected' : '') + '>' + (icons[o] || '') + o + '</option>').join('')
+    + '</select>';
+}
+
+function renderResumeCell(d, gi) {
+  const r = d.resume || {};
+  const name = r.name || '';
+  const hasFile = !!r.dataUrl;
+  return '<div style="display:flex;align-items:center;gap:4px;min-width:170px;">'
+    + '<input value="' + esc(name).replace(/"/g,'&quot;') + '" placeholder="简历文件名"'
+    + ' onchange="saveResumeName(' + gi + ',this.value)"'
+    + ' style="flex:1;min-width:0;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:11px;" />'
+    + '<button class="btn btn-outline btn-sm" onclick="uploadResume(' + gi + ')" title="上传简历文件（可选）" style="padding:2px 6px;color:var(--text-secondary);border-color:var(--border);">📎</button>'
+    + (hasFile ? '<button class="btn btn-outline btn-sm" onclick="downloadResume(' + gi + ')" title="下载" style="padding:2px 6px;color:var(--primary);border-color:var(--border);">⬇</button>' : '')
+    + ((name || hasFile) ? '<button class="btn btn-outline btn-sm" onclick="clearResume(' + gi + ')" title="清除" style="padding:2px 6px;color:var(--danger);border-color:var(--border);">✕</button>' : '')
+    + '</div>';
+}
+
+function renderPagination(total, totalPages) {
+  const pg = document.getElementById('pagination');
+  let html = '<span class="page-info">共 ' + total + ' 条</span>';
+  if (totalPages > 1) {
+    html += '<button class="page-btn" onclick="goPage(' + (currentPage-1) + ')" ' + (currentPage===1?'disabled':'') + '>◀ 上一页</button>';
+    for (let p = 1; p <= totalPages; p++) {
+      if (totalPages <= 7 || p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1) {
+        html += '<button class="page-btn ' + (p===currentPage?'active':'') + '" onclick="goPage(' + p + ')">' + p + '</button>';
+      } else if (html.slice(-14) !== '<span>…</span>') {
+        html += '<span class="page-info">…</span>';
+      }
+    }
+    html += '<button class="page-btn" onclick="goPage(' + (currentPage+1) + ')" ' + (currentPage===totalPages?'disabled':'') + '>下一页 ▶</button>';
+  }
+  html += '<span class="page-size">每页 <select onchange="pageSize=parseInt(this.value);resetToPage1();renderTable()">'
+    + '<option value="20"' + (pageSize===20?' selected':'') + '>20</option>'
+    + '<option value="50"' + (pageSize===50?' selected':'') + '>50</option>'
+    + '<option value="100"' + (pageSize===100?' selected':'') + '>100</option>'
+    + '<option value="9999"' + (pageSize===9999?' selected':'') + '>全部</option>'
+    + '</select> 条</span>';
+  pg.innerHTML = html;
+}
+
+function goPage(p) { currentPage = Math.max(1, p); renderTable(); }
+function setSort(t, el) {
+  currentSort = t;
+  const btns = document.querySelectorAll('.sort-group .btn');
+  btns.forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
+function updateStats() {
+  const d = getData();
+  const applied = d.filter(x => ['已投递','测评中','面试中','已录用'].includes(x.status)).length;
+  const ing = d.filter(x => x.status === '面试中' || x.status === '测评中').length;
+  const offer = d.filter(x => x.status === '已录用').length;
+  const pending = d.filter(x => x.status === '未开启' || x.status === '链接失效' || x.status === '岗位不符').length;
+  document.getElementById('statsRow').innerHTML =
+      '<div class="stat-card"><div class="num">' + d.length + '</div><div class="label">目标单位总数</div></div>'
+    + '<div class="stat-card"><div class="num">' + applied + '</div><div class="label">已投递</div></div>'
+    + '<div class="stat-card"><div class="num" style="color:#6c5ce7;">' + ing + '</div><div class="label">面试/测评中</div></div>'
+    + '<div class="stat-card"><div class="num" style="color:#00b894;">' + offer + '</div><div class="label">已录用</div></div>'
+    + '<div class="stat-card"><div class="num" style="color:#b2bec3;">' + pending + '</div><div class="label">未开启/失效/不符</div></div>'
+    + '<div class="stat-card"><div class="num">' + d.filter(x=>x.city==='成都').length + '</div><div class="label">⭐ 成都</div></div>'
+    + '<div class="stat-card"><div class="num">' + d.filter(x=>x.city==='重庆').length + '</div><div class="label">⭐ 重庆</div></div>'
+    + '<div class="stat-card"><div class="num">' + d.filter(x=>x.city!=='成都'&&x.city!=='重庆').length + '</div><div class="label">其他城市</div></div>';
+}
+
+// ==============================
+// 投递追踪：操作
+// ==============================
+function updateStatus(gi, ns) {
+  const data = getData(); const fd = getFilteredData(); const item = fd[gi];
+  if (!item) return;
+  const g = data.findIndex(x => x.name === item.name && x.city === item.city && x.type === item.type);
+  if (g >= 0) { data[g].status = ns; saveData(data); renderTable(); showToast('状态已更新：' + item.name + ' → ' + ns); }
+}
+function deleteRow(gi, ev) {
+  ev.stopPropagation();
+  const data = getData(); const fd = getFilteredData(); const item = fd[gi];
+  if (!item) return;
+  if (confirm('确认删除「' + item.name + '」的投递记录吗？')) {
+    const g = data.findIndex(x => x.name === item.name && x.city === item.city && x.type === item.type);
+    if (g >= 0) { data.splice(g, 1); saveData(data); editingLinkIdx = null; renderTable(); showToast('已删除：' + item.name); }
+  }
+}
+function startLinkEdit(gi) { editingLinkIdx = gi; renderTable(); }
+function cancelLinkEdit() { editingLinkIdx = null; renderTable(); }
+function saveLinkEdit(gi) {
+  const inp = document.getElementById('linkEditInput');
+  const val = inp ? inp.value.trim() : '';
+  const data = getData(); const fd = getFilteredData(); const item = fd[gi];
+  if (!item) { cancelLinkEdit(); return; }
+  const g = data.findIndex(x => x.name === item.name && x.city === item.city && x.type === item.type);
+  if (g >= 0) { data[g].link = val; saveData(data); editingLinkIdx = null; renderTable(); showToast('链接已更新：' + item.name); }
+}
+
+function showAddModal() { document.getElementById('addModal').classList.add('active'); }
+function closeAddModal() { document.getElementById('addModal').classList.remove('active'); document.getElementById('addForm').reset(); }
+function addCompany(e) {
+  e.preventDefault();
+  const data = getData();
+  data.push({
+    name: document.getElementById('addName').value.trim(),
+    type: document.getElementById('addType').value,
+    city: document.getElementById('addCity').value,
+    location: '待填写',
+    time: '待填写',
+    link: document.getElementById('addLink').value.trim() || '待查询',
+    exam: '待查询',
+    salary: '待查询',
+    status: '未投递',
+    note: document.getElementById('addNote').value.trim()
+  });
+  saveData(data); closeAddModal(); renderTable(); showToast('已添加新单位');
+}
+
+// 简历文件
+let pendingResumeIdx = null;
+function uploadResume(gi) { pendingResumeIdx = gi; document.getElementById('resumeFileInput').click(); }
+function saveResumeName(gi, name) {
+  const data = getData(); const fd = getFilteredData(); const item = fd[gi];
+  if (!item) return;
+  const g = data.findIndex(x => x.name === item.name);
+  if (g >= 0) { data[g].resume = data[g].resume || {}; data[g].resume.name = name.trim(); saveData(data); }
+}
+function handleResumeFile(input) {
+  const file = input.files[0];
+  if (!file) { input.value = ''; return; }
+  if (file.size > 1.5 * 1024 * 1024) { showToast('文件超过 1.5MB，浏览器存不下，请换小文件'); input.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const data = getData(); const fd = getFilteredData(); const item = fd[pendingResumeIdx];
+    if (item) {
+      const g = data.findIndex(x => x.name === item.name);
+      if (g >= 0) {
+        data[g].resume = { name: file.name, dataUrl: e.target.result };
+        saveData(data); renderTable(); showToast('已保存简历：' + file.name);
+      }
+    }
+    input.value = ''; pendingResumeIdx = null;
+  };
+  reader.readAsDataURL(file);
+}
+function downloadResume(gi) {
+  const fd = getFilteredData(); const item = fd[gi];
+  if (!item || !item.resume || !item.resume.dataUrl) return;
+  const a = document.createElement('a');
+  a.href = item.resume.dataUrl;
+  a.download = item.resume.name || 'resume';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function clearResume(gi) {
+  const data = getData(); const fd = getFilteredData(); const item = fd[gi];
+  if (!item) return;
+  const g = data.findIndex(x => x.name === item.name);
+  if (g >= 0) { delete data[g].resume; saveData(data); renderTable(); showToast('已移除简历文件'); }
+}
+
+// ==============================
+// 工具
+// ==============================
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function formatLink(lt) {
+  const urlRegex = /(https?:\/\/[^\s（）\(\)\）\（；;，,\n]+)/g;
+  const urls = lt.match(urlRegex) || [];
+  let r = esc(lt);
+  urls.forEach(u => {
+    const cu = u.replace(/[）\)；;，,\s（\(]+$/, '');
+    r = r.replace(esc(u), '<a href="' + cu + '" target="_blank" rel="noopener" class="link" title="点击打开">' + cu + '</a>');
+  });
+  const emailRegex = /[\w.\-]+@[\w.\-]+\.[a-z]+/gi;
+  r = r.replace(emailRegex, m => '<a href="mailto:' + m + '" class="link">' + m + '</a>');
+  return r;
+}
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+// ==============================
+// 数据导入/导出/重置
+// ==============================
+function saveDataToFile() {
+  const data = {
+    resume_tracker_data: localStorage.getItem('resume_tracker_data'),
+    resume_tracker_version: localStorage.getItem('resume_tracker_version'),
+    checkin_data: localStorage.getItem('checkin_data'),
+    custom_tasks: localStorage.getItem('custom_tasks'),
+    task_notes: localStorage.getItem('task_notes'),
+    exportedAt: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '秋招工作台数据.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('备份已下载，请妥善保存');
+}
+function loadDataFromFile() { document.getElementById('importFile').click(); }
+function importBackup(input) {
+  const file = input.files[0];
+  if (!file) { input.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      const keys = ['resume_tracker_data','resume_tracker_version','checkin_data','custom_tasks','task_notes'];
+      let imported = 0;
+      for (const k of keys) {
+        if (data[k] !== undefined && data[k] !== null) { localStorage.setItem(k, data[k]); imported++; }
+      }
+      if (imported === 0) showToast('备份文件里没有有效数据');
+      else { showToast('导入成功，正在刷新...'); setTimeout(function() { location.reload(); }, 800); }
+    } catch (err) { showToast('导入失败：文件格式不正确'); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+function resetAllData() {
+  if (confirm('确定要重置所有数据吗？投递记录、打卡将全部清除恢复默认。')) {
+    localStorage.removeItem('resume_tracker_data');
+    localStorage.removeItem('resume_tracker_version');
+    localStorage.removeItem('checkin_data');
+    localStorage.removeItem('custom_tasks');
+    localStorage.removeItem('task_notes');
+    renderTable(); renderCheckin(); renderTimeline();
+    showToast('所有数据已重置');
+  }
+}
+
+// ==============================
+// 备考中心：资源 + 打卡
+// ==============================
+const resources = [
+  { name: '八股文·博主资料', icon: '📚', desc: '付费购入·嵌入式面经精讲', url: 'https://icnatmmjsvgx.feishu.cn/wiki/ImjbwjUAGipYbTk34K8ch1tWnah' },
+  { name: '八股文·技术专项', icon: '📖', desc: '自整理·C语言/OS/嵌入式高频考点', url: 'https://xcnhib1ft9lo.feishu.cn/docx/RdTSdI9nJonZJOxw3n0cS1pAnyc' },
+  { name: '非技术面试复盘', icon: '💬', desc: '自整理·自我介绍/HR问答/项目追问', url: 'https://xcnhib1ft9lo.feishu.cn/wiki/Yt3qwvMEMi9Xd1kHr77cxdYPngg' },
+  { name: '力扣学习计划', icon: '💻', desc: 'LeetCode刷题·面试高频必刷', url: 'https://leetcode.cn/studyplan/' },
+  { name: '牛客网·嵌入式题库', icon: '🐮', desc: '嵌入式专项练习·笔试真题', url: 'https://www.nowcoder.com/exam/collection?questionJobId=195&subTabName=xingce_page' },
+  { name: 'GitHub 个人主页', icon: '👤', desc: '把链接换成你自己的 GitHub 主页', url: 'https://github.com' },
+  { name: '简历模板（示例）', icon: '📄', desc: '把链接换成你自己的简历模板文件或在线文档', url: 'https://example.com/你的简历模板' },
+  { name: '模拟面试', icon: '🎤', desc: 'AI模拟面试·真题实战练习', url: 'https://test.lollipop.top/jobs' }
+];
+
+function renderResources() {
+  const el = document.getElementById('resourceCards');
+  el.innerHTML = resources.map(r =>
+    '<a href="' + r.url + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">'
+    + '<div class="rsrc-card" title="点击跳转"><div class="rsrc-icon">' + r.icon + '</div>'
+    + '<div><div class="rsrc-name">' + r.name + '</div><div class="rsrc-desc">' + r.desc + '</div></div>'
+    + '</div></a>').join('');
+}
+
+const DEADLINE = '2026-08-17';
+function getTodayStr() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function getCheckins() { const s = localStorage.getItem('checkin_data'); return s ? JSON.parse(s) : {}; }
+function saveCheckins(d) { localStorage.setItem('checkin_data', JSON.stringify(d)); }
+function getCustomTasks(dateStr) { const s = localStorage.getItem('custom_tasks'); const all = s ? JSON.parse(s) : {}; return all[dateStr] || []; }
+function saveCustomTasks(dateStr, tasks) { const s = localStorage.getItem('custom_tasks'); const all = s ? JSON.parse(s) : {}; all[dateStr] = tasks; localStorage.setItem('custom_tasks', JSON.stringify(all)); }
+function getTaskNotes() { const s = localStorage.getItem('task_notes'); return s ? JSON.parse(s) : {}; }
+function saveTaskNotes(d) { localStorage.setItem('task_notes', JSON.stringify(d)); }
+
+function getDailyTasks(dateStr) {
+  const isBefore = dateStr <= DEADLINE;
+  if (isBefore) {
+    return [
+      { id: 'project', label: '项目完善/代码整理/文档', time: '2-3h', cat: '项目' },
+      { id: 'bg', label: '八股文背诵（1-2个知识点）', time: '1h', cat: '八股文' },
+      { id: 'leetcode', label: 'LeetCode刷题（1-2道）', time: '30min', cat: '力扣' },
+      { id: 'nowcoder', label: '牛客网行测/公基一轮', time: '30min', cat: '牛客' }
+    ];
+  }
+  return [
+    { id: 'apply', label: '投递简历（10-30家，逐渐增加）', time: '1.5h', cat: '投递' },
+    { id: 'bg', label: '八股文系统性背诵（1章）', time: '2h', cat: '八股文' },
+    { id: 'leetcode', label: 'LeetCode刷题（3-5道）', time: '1.5h', cat: '力扣' },
+    { id: 'nowcoder', label: '牛客网笔试真题练习', time: '1h', cat: '牛客' }
+  ];
+}
+
+let currentPhase = 0;
+function getWeekDates(offset) {
+  const now = new Date();
+  const day = now.getDay() || 7;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - day + 1 + offset * 7);
+  const arr = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const dd = String(d.getDate()).padStart(2,'0');
+    arr.push({ date: y + '-' + m + '-' + dd });
+  }
+  return arr;
+}
+
+function renderCheckin() {
+  const el = document.getElementById('checkinContent');
+  const today = getTodayStr();
+
+  // 今日打卡进度卡（顶部）
+  const todayTasks = getDailyTasks(today).concat(getCustomTasks(today));
+  const todayData = getCheckins()[today] || {};
+  const todayDone = todayTasks.filter(t => todayData[t.id]).length;
+  const todayPct = todayTasks.length ? Math.round(todayDone / todayTasks.length * 100) : 0;
+  const todayPhase = today <= DEADLINE ? '项目冲刺期（截至' + DEADLINE.slice(5).replace('-','/') + '）' : '全面备战期（8/18起）';
+  let hint;
+  if (todayPct === 100) hint = '完美完成！';
+  else if (todayPct >= 50) hint = '部分完成，继续推进！';
+  else if (todayPct > 0) hint = '继续加油！';
+  else hint = '今日未开始，加油！';
+  const circ = 2 * Math.PI * 42;
+  const dash = (todayPct / 100) * circ;
+  const statsCard = '<div style="background:#fff;border-radius:14px;padding:20px 24px;box-shadow:var(--shadow);margin-bottom:18px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">'
+    + '<svg width="100" height="100" viewBox="0 0 100 100" style="flex-shrink:0;">'
+    + '<defs><linearGradient id="todayGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00b894"/><stop offset="50%" stop-color="#fdcb6e"/><stop offset="100%" stop-color="#d63031"/></linearGradient></defs>'
+    + '<circle cx="50" cy="50" r="42" fill="none" stroke="#e9ecef" stroke-width="10"/>'
+    + '<circle cx="50" cy="50" r="42" fill="none" stroke="url(#todayGrad)" stroke-width="10" stroke-dasharray="' + dash.toFixed(1) + ' ' + circ.toFixed(1) + '" stroke-linecap="round" transform="rotate(-90 50 50)"/>'
+    + '<text x="50" y="55" text-anchor="middle" font-size="20" font-weight="700" fill="#0984e3">' + todayPct + '%</text>'
+    + '</svg>'
+    + '<div>'
+    + '<div style="font-size:16px;font-weight:700;margin-bottom:6px;">📋 今日打卡进度</div>'
+    + '<div style="font-size:13px;color:var(--text-secondary);">' + today + ' · 🚀 ' + esc(todayPhase) + ' · ' + esc(hint) + '</div>'
+    + '</div>'
+    + '</div>';
+
+  const weekOffsets = [-1, 0, 1, 2];
+  const weekLabels = ['上周', '本周', '下周', '下下周'];
+  let phaseHtml = '<div class="phase-tabs">';
+  weekOffsets.forEach(function(w, i) {
+    const wd = getWeekDates(w);
+    const active = currentPhase === i ? 'active' : '';
+    phaseHtml += '<button class="phase-tab ' + active + '" onclick="currentPhase=' + i + ';renderCheckin();">'
+      + weekLabels[i] + '<br><small>' + wd[0].date.slice(5) + '~' + wd[6].date.slice(5) + '</small></button>';
+  });
+  phaseHtml += '</div>';
+
+  const wd = getWeekDates(weekOffsets[currentPhase]);
+  const notes = getTaskNotes();
+  let dayHtml = '';
+  wd.forEach(function(day) {
+    const defaultTasks = getDailyTasks(day.date);
+    const customTasks = getCustomTasks(day.date);
+    const tasks = defaultTasks.concat(customTasks);
+    const dayData = getCheckins()[day.date] || {};
+    let done = 0;
+    tasks.forEach(function(t) { if (dayData[t.id]) done++; });
+    const isToday = day.date === today;
+    const d = new Date(day.date + 'T00:00:00');
+    const w = ['日','一','二','三','四','五','六'][d.getDay()];
+    const phaseName = day.date <= DEADLINE ? '项目冲刺期（截至' + DEADLINE.slice(5).replace('-','/') + '）' : '全面备战期（8/18起）';
+    let headerHtml = '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">'
+      + '<div style="font-weight:700;font-size:14px;">' + esc(day.date.slice(5)) + ' 星期' + w + (isToday ? '  <span style="color:#0984e3;">（今天）</span>' : '') + '</div>'
+      + '<div style="display:flex;gap:14px;align-items:center;font-size:12px;color:var(--text-secondary);">'
+      + '<span>未完成 (' + done + '/' + tasks.length + ')</span>'
+      + '<span>' + esc(phaseName) + '</span>'
+      + '</div></div>';
+    let taskHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">';
+    tasks.forEach(function(t) {
+      const checked = dayData[t.id] || false;
+      const noteVal = notes[day.date + '|' + t.id] || '';
+      const cardBorder = checked ? '#00b894' : '#e0e0e0';
+      const cardBg = checked ? '#e8f5e9' : '#fff';
+      const opacity = checked ? '.75' : '1';
+      const isEditing = t.editable && editingTaskKey === (day.date + '|' + t.id);
+      const titleBlock = isEditing
+        ? '<div style="display:flex;gap:4px;align-items:center;">'
+          + '<input id="editTaskInput" value="' + esc(t.label).replace(/"/g,'&quot;') + '" style="flex:1;padding:3px 6px;border:1px solid var(--primary);border-radius:4px;font-size:13px;" onkeydown="if(event.key===\'Enter\')saveEditTask(\'' + day.date + '\',\'' + t.id + '\')" />'
+          + '<button onclick="saveEditTask(\'' + day.date + '\',\'' + t.id + '\')" style="border:1px solid var(--success);background:var(--success);color:#fff;border-radius:4px;cursor:pointer;padding:2px 6px;font-size:12px;">✓</button>'
+          + '<button onclick="cancelEditTask()" style="border:1px solid #dfe6e9;background:#fff;border-radius:4px;cursor:pointer;padding:2px 6px;font-size:12px;">✕</button>'
+          + '</div>'
+        : '<div style="font-weight:600;font-size:13px;' + (checked ? 'text-decoration:line-through;color:#b2bec3;' : '') + '">' + esc(t.label) + '</div>';
+      const actionBlock = t.editable
+        ? (isEditing ? '' : '<div style="display:flex;gap:2px;flex-shrink:0;">'
+          + '<button onclick="event.preventDefault();editCustomTask(\'' + day.date + '\',\'' + t.id + '\')" style="border:none;background:none;cursor:pointer;font-size:12px;padding:0 2px;" title="编辑">✏️</button>'
+          + '<button onclick="event.preventDefault();deleteCustomTask(\'' + day.date + '\',\'' + t.id + '\')" style="border:none;background:none;cursor:pointer;font-size:12px;padding:0 2px;" title="删除">🗑</button>'
+          + '</div>')
+        : '';
+      taskHtml += '<div style="background:' + cardBg + ';border-radius:8px;padding:10px 12px;border:1px solid ' + cardBorder + ';opacity:' + opacity + ';">'
+        + '<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;">'
+        + '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="toggleCheckin(\'' + day.date + '\',\'' + t.id + '\')" style="margin-top:2px;">'
+        + '<div style="flex:1;min-width:0;">'
+        + titleBlock
+        + '<div style="color:var(--text-secondary);font-size:11px;margin-top:2px;">⏱ ' + esc(t.time) + ' · ' + esc(t.cat) + '</div>'
+        + '</div>'
+        + actionBlock
+        + '</div>'
+        + '<input placeholder="📝 备注注了什么..." value="' + esc(noteVal).replace(/"/g, '&quot;') + '"'
+        + ' onchange="saveTaskNote(\'' + day.date + '\',\'' + t.id + '\',this.value)"'
+        + ' style="width:100%;padding:5px 8px;border:1px solid #e0e0e0;border-radius:6px;font-size:12px;background:#fafafa;box-sizing:border-box;" />'
+        + '</div>';
+    });
+    taskHtml += '<div style="background:transparent;display:flex;align-items:center;justify-content:center;min-height:60px;border:1.5px dashed var(--primary);border-radius:8px;">'
+      + (addTaskDay === day.date
+        ? '<div style="display:flex;gap:6px;align-items:center;padding:6px;flex-wrap:wrap;justify-content:center;">'
+          + '<input id="customTaskInput" placeholder="新任务名称..." style="flex:1;min-width:120px;padding:6px 10px;border:1px solid var(--primary);border-radius:6px;font-size:13px;" onkeydown="if(event.key===\'Enter\')saveCustomTaskUI(\'' + day.date + '\')" />'
+          + '<button class="btn btn-primary btn-sm" onclick="saveCustomTaskUI(\'' + day.date + '\')">✓ 保存</button>'
+          + '<button class="btn btn-outline btn-sm" onclick="cancelCustomTaskUI()" style="color:var(--text);border-color:var(--border);">✕</button>'
+          + '</div>'
+        : '<button onclick="addCustomTaskUI(\'' + day.date + '\')" style="border:none;background:none;color:var(--primary);cursor:pointer;font-size:13px;font-weight:600;padding:8px 14px;">+ 添加自定义任务</button>')
+      + '</div>';
+    taskHtml += '</div>';
+    const dayBorder = isToday ? 'border:2px solid var(--primary);' : '';
+    dayHtml += '<div style="background:#f8f9fa;border-radius:12px;padding:14px 16px;margin-bottom:12px;' + dayBorder + '">'
+      + headerHtml + taskHtml
+      + '</div>';
+  });
+
+  el.innerHTML = '<h2 style="margin-bottom:10px;">✅ 每日打卡</h2>' + statsCard + phaseHtml + dayHtml;
+}
+
+function toggleCheckin(dateStr, taskId) {
+  const data = getCheckins();
+  data[dateStr] = data[dateStr] || {};
+  data[dateStr][taskId] = !data[dateStr][taskId];
+  saveCheckins(data);
+  renderCheckin();
+}
+function saveTaskNote(dateStr, taskId, val) {
+  const notes = getTaskNotes();
+  notes[dateStr + '|' + taskId] = val;
+  saveTaskNotes(notes);
+}
+let addTaskDay = null;
+let editingTaskKey = null;
+function addCustomTaskUI(dateStr) { addTaskDay = dateStr; renderCheckin(); }
+function saveCustomTaskUI(dateStr) {
+  const inp = document.getElementById('customTaskInput');
+  const label = inp ? inp.value.trim() : '';
+  if (!label) return;
+  const tasks = getCustomTasks(dateStr);
+  tasks.push({ id: 'custom_' + Date.now(), label: label, time: '30min', cat: '自定义', editable: true });
+  saveCustomTasks(dateStr, tasks);
+  addTaskDay = null;
+  renderCheckin();
+}
+function cancelCustomTaskUI() { addTaskDay = null; renderCheckin(); }
+function editCustomTask(dateStr, taskId) { editingTaskKey = dateStr + '|' + taskId; renderCheckin(); }
+function saveEditTask(dateStr, taskId) {
+  const inp = document.getElementById('editTaskInput');
+  const label = inp ? inp.value.trim() : '';
+  if (!label) return;
+  const tasks = getCustomTasks(dateStr);
+  const t = tasks.find(x => x.id === taskId);
+  if (t) t.label = label;
+  saveCustomTasks(dateStr, tasks);
+  editingTaskKey = null;
+  renderCheckin();
+  showToast('已更新任务');
+}
+function cancelEditTask() { editingTaskKey = null; renderCheckin(); }
+function deleteCustomTask(dateStr, taskId) {
+  saveCustomTasks(dateStr, getCustomTasks(dateStr).filter(x => x.id !== taskId));
+  renderCheckin();
+  showToast('已删除任务');
+}
+
+// ==============================
+// 时间线
+// ==============================
+const timeline = [
+  {
+    time: '2026年4月~7月',
+    title: '🚀 提前批 & 实习转正',
+    color: 'green',
+    items: [
+      '鹰牌域提前批新实生生（4月起，成都研发岗）',
+      '宁德十所暑期开放日（6/17-7/3报名，7/22-24面试）',
+      '⚠️ 中兴通讯之秋招（6/29，8/29截止）',
+      '华为成都研究所启动（预计7月）',
+      '京东方新东方考本计划（7月起）',
+      '小米实习主管正通知（7月起）',
+      '航空工业成飞暑期开放日（7月底，8/14面试）'
+    ]
+  },
+  {
+    time: '2026年8月~9月',
+    title: '💥 秋招正式批网申高峰',
+    color: 'red',
+    items: [
+      '🔥 中兴通讯网申截止（8月29日）',
+      '🐺 大企业正式批集中开启网申',
+      '中国电科/中航国央企·航空工业机器等国企同步开放',
+      '长安汽车、长江、极米、吉利等9月密集启动',
+      '比亚迪、吉利、特斯拉等8月底启动',
+      '备好多家本地酒，针对不同公司做调研'
+    ]
+  },
+  {
+    time: '2026年9月~10月',
+    title: '📝 笔试密集期',
+    color: 'blue',
+    items: [
+      '💻 华为机考（在线编程，C/C++，约1-2小时）',
+      '📝 中兴/小米/京东等大厂笔试',
+      '多家国央企行测+专业笔试',
+      'HR面（群面薪资、软技能等）',
+      '重点提升中等难度题，准备好1分钟自我介绍',
+      '准备华为/腾讯/小米等大厂笔试实战',
+      '准备中车/中铁·LoRa·FreeRTOS类高频助手，自平衡小车三个项目回顾'
+    ]
+  },
+  {
+    time: '2026年10月~11月',
+    title: '🎯 面试高峰',
+    color: 'green',
+    items: [
+      '一轮技术面（项目深挖、C语言基础、嵌入式知识点）',
+      '二轮技术面（系统设计、RTOS、通信协议）',
+      'HR面（薪资期望、职业规划、软技能等）',
+      '模拟面试练习，准备1分钟+3分钟自我介绍',
+      '准备华为/小米/中兴/德赛西威 4-6 个项目',
+      '准备多场薪资谈判，准备签约三方'
+    ]
+  },
+  {
+    time: '2026年11月~12月',
+    title: '🤝 签约 & 谈薪',
+    color: 'red',
+    items: [
+      'Offer陆续发放，比较不同公司待遇',
+      '关注base薪资/年终奖/五险一金/股票激励',
+      '央企vs私企：稳定性vs薪资成长空间权衡',
+      '三方协议签订，注意违约金条款',
+      '确定最终去向，完成学校就业手续'
+    ]
+  },
+  {
+    time: '2027年2月~4月',
+    title: '🚂 春招补录（备用）',
+    color: 'blue',
+    items: [
+      '春招岗位较少，主要补录未招满的HC',
+      '部分公司春招有提前批/交叉段项目',
+      '如秋招结果满意可跳此阶段'
+    ]
+  }
+];
+function renderTimeline() {
+  const el = document.getElementById('timelineContent');
+  const colorMap = { green: '#00b894', red: '#d63031', blue: '#0984e3' };
+  let html = '<div style="background:linear-gradient(135deg,#74b9ff,#a29bfe);color:#fff;padding:18px 24px;border-radius:12px;margin-bottom:18px;">';
+  html += '<h2 style="font-size:18px;margin-bottom:6px;">⏰ 2027届秋招关键时间线</h2>';
+  html += '<div style="font-size:13px;opacity:.9;">以下为嵌入式软件工程师方向秋招核心节点。绿色=当前活跃阶段，红色=关键截止，灰色=已过阶段</div>';
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">';
+  timeline.forEach(function(t) {
+    const c = colorMap[t.color] || '#0984e3';
+    const itemHtml = t.items.map(function(i) { return '<li style="margin-bottom:5px;line-height:1.55;">' + esc(i) + '</li>'; }).join('');
+    html += '<div style="background:var(--card-bg);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-left:4px solid ' + c + ';">'
+      + '<h3 style="font-size:15px;margin-bottom:4px;">' + esc(t.title) + '</h3>'
+      + '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">' + esc(t.time) + '</div>'
+      + '<ul style="padding-left:18px;font-size:13px;line-height:1.6;">' + itemHtml + '</ul>'
+      + '</div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ==============================
+// 岗位匹配
+// ==============================
+const matchFields = [
+  { key: 'edu', label: '学历要求', options: [['y','满足'],['p','部分'],['n','不满足']] },
+  { key: 'c', label: 'C语言基础', options: [['y','熟练'],['p','一般'],['n','薄弱']] },
+  { key: 'stm32', label: 'STM32开发', options: [['y','做过项目'],['p','了解'],['n','不会']] },
+  { key: 'rtos', label: 'FreeRTOS/RTOS', options: [['y','熟练'],['p','了解'],['n','不会']] },
+  { key: 'proto', label: '通信协议(UART/I2C/SPI/MQTT)', options: [['y','熟练'],['p','了解'],['n','不会']] },
+  { key: 'bsp', label: 'BSP/驱动开发', options: [['y','做过'],['p','了解'],['n','不会']] },
+  { key: 'linux', label: 'Linux基础', options: [['y','熟练'],['p','了解'],['n','不会']] },
+  { key: 'hw', label: '硬件基础(电路/PCB)', options: [['y','熟练'],['p','了解'],['n','不会']] },
+  { key: 'eng', label: '英语能力', options: [['y','CET-6+'],['p','CET-4'],['n','未过级']] },
+  { key: 'proj', label: '项目经历', options: [['y','对口项目'],['p','相关'],['n','无关']] }
+];
+let matchScores = {};
+
+function renderMatch() {
+  const el = document.getElementById('matchItems');
+  el.innerHTML = matchFields.map(f =>
+    '<div class="match-item"><label>' + f.label + '</label>'
+    + '<select onchange="setMatchValue(\'' + f.key + '\',this.value)">'
+    + '<option value="">-- 选择 --</option>'
+    + f.options.map(o => '<option value="' + o[0] + '" ' + (matchScores[f.key] === o[0] ? 'selected' : '') + '>' + o[1] + '</option>').join('')
+    + '</select></div>').join('');
+  calcMatch();
+}
+function setMatchValue(k, v) { matchScores[k] = v; calcMatch(); }
+function calcMatch() {
+  const vals = Object.keys(matchScores).map(k => ({ k, v: matchScores[k] }));
+  const filled = vals.filter(x => x.v);
+  const score = filled.reduce((s, x) => s + (x.v === 'y' ? 2 : x.v === 'p' ? 1 : 0), 0);
+  const max = filled.length * 2;
+  const pct = max ? Math.round(score / max * 100) : 0;
+  const gaps = matchFields.filter(f => matchScores[f.key] === 'n').map(f => f.label);
+  const parts = filled.length ? '' : '（请先选择各项能力）';
+  let grade, color;
+  if (!filled.length) { grade = '待评估'; color = '#b2bec3'; }
+  else if (pct >= 80) { grade = '高匹配 ✅'; color = '#00b894'; }
+  else if (pct >= 60) { grade = '中匹配 ⚠️'; color = '#fdcb6e'; }
+  else if (pct >= 40) { grade = '偏低匹配'; color = '#e17055'; }
+  else { grade = '低匹配 ❌'; color = '#d63031'; }
+  document.getElementById('matchResult').innerHTML =
+    '<h2>🎯 ' + esc(document.getElementById('matchCompany').value || '公司') + '</h2>'
+    + '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">' + esc(document.getElementById('matchJob').value || '岗位') + '</div>'
+    + '<div class="badge" style="background:' + color + ';color:#fff;">' + grade + '</div>'
+    + '<div style="font-size:34px;font-weight:800;margin:12px 0;">' + pct + '%</div>'
+    + '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">已评估 ' + filled.length + '/10 项' + parts + '</div>'
+    + (gaps.length ? '<div style="font-size:13px;background:#fff5f5;border-radius:8px;padding:10px;">❌ 短板：' + gaps.join('、') + '</div>' : '')
+    + renderMatchHistory();
+}
+function saveMatch() {
+  const history = JSON.parse(localStorage.getItem('match_history') || '[]');
+  const filled = Object.keys(matchScores).filter(k => matchScores[k]).length;
+  const score = Object.keys(matchScores).reduce((s, k) => s + (matchScores[k] === 'y' ? 2 : matchScores[k] === 'p' ? 1 : 0), 0);
+  const pct = filled ? Math.round(score / (filled * 2) * 100) : 0;
+  history.push({
+    company: document.getElementById('matchCompany').value,
+    job: document.getElementById('matchJob').value,
+    pct: pct,
+    scores: Object.assign({}, matchScores),
+    ts: new Date().toISOString()
+  });
+  localStorage.setItem('match_history', JSON.stringify(history));
+  calcMatch();
+  showToast('已保存匹配记录');
+}
+function clearMatch() {
+  matchScores = {};
+  document.getElementById('matchCompany').value = '';
+  document.getElementById('matchJob').value = '';
+  renderMatch();
+}
+function renderMatchHistory() {
+  const history = JSON.parse(localStorage.getItem('match_history') || '[]');
+  if (!history.length) return '';
+  let html = '<div style="margin-top:18px;"><h3 style="font-size:14px;margin-bottom:8px;">📋 历史记录</h3>';
+  html += history.slice(-10).reverse().map((h, i) => {
+    const idx = history.length - 1 - i;
+    return '<div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px dashed #eee;">'
+      + '<span style="font-weight:700;">' + esc(h.company) + '</span>'
+      + '<span style="color:var(--text-secondary);">' + esc(h.job || '') + '</span>'
+      + '<span style="color:var(--primary);font-weight:700;">' + h.pct + '%</span>'
+      + '<button class="btn btn-outline btn-sm" style="margin-left:auto;color:var(--text);border-color:var(--border);" onclick="loadMatch(' + idx + ')">加载</button>'
+      + '</div>';
+  }).join('');
+  return html + '</div>';
+}
+function loadMatch(idx) {
+  const history = JSON.parse(localStorage.getItem('match_history') || '[]');
+  const h = history[idx];
+  if (!h) return;
+  matchScores = Object.assign({}, h.scores || {});
+  document.getElementById('matchCompany').value = h.company || '';
+  document.getElementById('matchJob').value = h.job || '';
+  renderMatch();
+  showToast('已加载：' + h.company);
+}
+
+// ==============================
+// Tab 切换 & 初始化
+// ==============================
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'tracking') renderTable();
+  if (tab === 'timeline') renderTimeline();
+  if (tab === 'preparation') { renderResources(); renderCheckin(); }
+  if (tab === 'match') renderMatch();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // 简历文件上传的隐藏 input
+  const fi = document.createElement('input');
+  fi.type = 'file';
+  fi.id = 'resumeFileInput';
+  fi.style.display = 'none';
+  fi.accept = 'application/pdf,image/*,application/msword,.docx';
+  fi.onchange = function() { handleResumeFile(fi); };
+  document.body.appendChild(fi);
+  renderTable();
+  renderTimeline();
+  renderResources();
+  renderCheckin();
+  renderMatch();
+});
+</script>
+</body>
+</html>
