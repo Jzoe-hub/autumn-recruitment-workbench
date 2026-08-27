@@ -124,15 +124,13 @@ tr.row-mismatch { background:#fafafa; }
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('tracking',this)">📋 投递追踪</button>
     <button class="tab-btn" onclick="switchTab('timeline',this)">⏱ 秋招时间线</button>
-    <button class="tab-btn" onclick="switchTab('preparation',this)">📝 备考中心</button>
+    <button class="tab-btn" onclick="switchTab('preparation',this)">📝 备战中心</button>
     <button class="tab-btn" onclick="switchTab('match',this)">🎯 岗位匹配</button>
   </div>
 
   <!-- TAB 1: 投递追踪 -->
   <div class="tab-content active" id="tab-tracking">
-    <a href="https://example.com/你的秋招信息表" target="_blank" rel="noopener" style="text-decoration:none;">
-      <div class="external-banner">📊 外部：秋招信息汇总表（占位）→ 打开HTML搜“外部：”，把链接换成你自己收集的秋招信息表</div>
-    </a>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:16px;" id="sourceCards"></div>
     <div class="stats-row" id="statsRow"></div>
     <div class="filters">
       <select id="cityFilter" onchange="resetToPage1();renderTable()">
@@ -190,10 +188,11 @@ tr.row-mismatch { background:#fafafa; }
     <div class="checkin-card" id="timelineContent"></div>
   </div>
 
-  <!-- TAB 3: 备考中心 -->
+  <!-- TAB 3: 备战中心 -->
   <div class="tab-content" id="tab-preparation">
     <div class="resource-cards" id="resourceCards"></div>
     <div class="checkin-card" id="checkinContent"></div>
+    <div class="checkin-card" id="interviewContent"></div>
   </div>
 
   <!-- TAB 4: 岗位匹配 -->
@@ -550,6 +549,7 @@ function saveDataToFile() {
     checkin_data: localStorage.getItem('checkin_data'),
     custom_tasks: localStorage.getItem('custom_tasks'),
     task_notes: localStorage.getItem('task_notes'),
+    interview_records: localStorage.getItem('interview_records'),
     exportedAt: new Date().toISOString()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -569,7 +569,7 @@ function importBackup(input) {
   reader.onload = function(e) {
     try {
       const data = JSON.parse(e.target.result);
-      const keys = ['resume_tracker_data','resume_tracker_version','checkin_data','custom_tasks','task_notes'];
+      const keys = ['resume_tracker_data','resume_tracker_version','checkin_data','custom_tasks','task_notes','interview_records'];
       let imported = 0;
       for (const k of keys) {
         if (data[k] !== undefined && data[k] !== null) { localStorage.setItem(k, data[k]); imported++; }
@@ -588,7 +588,8 @@ function resetAllData() {
     localStorage.removeItem('checkin_data');
     localStorage.removeItem('custom_tasks');
     localStorage.removeItem('task_notes');
-    renderTable(); renderCheckin(); renderTimeline();
+    localStorage.removeItem('interview_records');
+    renderSourceCards(); renderTable(); renderCheckin(); renderTimeline(); renderInterviews();
     showToast('所有数据已重置');
   }
 }
@@ -597,15 +598,34 @@ function resetAllData() {
 // 备考中心：资源 + 打卡
 // ==============================
 const resources = [
-  { name: '八股文资料（占位）', icon: '📚', desc: '在HTML里搜本卡片，把链接换成你自己的八股资料', url: '' },
-  { name: '技术笔记/八股（占位）', icon: '📖', desc: '在HTML里搜本卡片，把链接换成你自己的笔记或文档', url: '' },
-  { name: '面试复盘笔记（占位）', icon: '💬', desc: '在HTML里搜本卡片，把链接换成你自己的复盘文档', url: '' },
-  { name: '力扣学习计划', icon: '💻', desc: 'LeetCode刷题·面试高频必刷（通用平台）', url: 'https://leetcode.cn/studyplan/' },
-  { name: '牛客网', icon: '🐮', desc: '笔试真题·刷题练习（通用平台）', url: 'https://www.nowcoder.com/' },
-  { name: 'GitHub 主页（占位）', icon: '👤', desc: '在HTML里搜本卡片，把链接换成你自己的 GitHub 主页', url: '' },
-  { name: '简历模板（占位）', icon: '📄', desc: '在HTML里搜本卡片，把链接换成你自己的简历模板', url: '' },
-  { name: '模拟面试（占位）', icon: '🎤', desc: '在HTML里搜本卡片，把链接换成你自己的模拟面试平台', url: '' }
+  { name: '八股资料（占位）', icon: '📚', desc: '在HTML里搜本卡片，把链接换成你自己的八股/面试题资料', url: '' },
+  { name: '简历模板（占位）', icon: '📄', desc: '在HTML里搜本卡片，把链接换成你自己的简历模板/在线简历', url: '' },
+  { name: '求职工具（占位）', icon: '🛠️', desc: '在HTML里搜本卡片，把链接换成刷题/题库/模拟面试等工具', url: '' },
+  { name: '面试资料（占位）', icon: '🎤', desc: '在HTML里搜本卡片，把链接换成你自己的面试经验/复盘文档', url: '' }
 ];
+
+// 投递追踪顶部：购入表格 + 信息源（使用者自填，或让 AI 按简历检索岗位后填入）
+const sourceLinks = [
+  { name: '📊 购入的秋招信息表', desc: '在HTML里搜「sourceLinks」把链接换成你买的秋招汇总表', url: '' },
+  { name: '🔗 我的信息源', desc: '在HTML里搜「sourceLinks」把链接换成你自己的信息源（招聘网站/公众号/内推群等，也可让AI按你的简历检索合适岗位填入）', url: '' }
+];
+
+function renderSourceCards() {
+  const el = document.getElementById('sourceCards');
+  if (!el) return;
+  el.innerHTML = sourceLinks.map(r => {
+    if (r.url) {
+      return '<a href="' + r.url + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">'
+        + '<div class="rsrc-card" title="点击跳转"><div class="rsrc-icon">' + (r.icon || '🔗') + '</div>'
+        + '<div><div class="rsrc-name">' + r.name + '</div><div class="rsrc-desc">' + r.desc + '</div></div>'
+        + '</div></a>';
+    }
+    return '<div class="rsrc-card" title="占位卡片：打开HTML搜索「sourceLinks」，把链接替换成你自己的" style="opacity:.72;">'
+      + '<div class="rsrc-icon">' + (r.icon || '🔗') + '</div>'
+      + '<div><div class="rsrc-name">' + r.name + '</div><div class="rsrc-desc">' + r.desc + '</div></div>'
+      + '</div>';
+  }).join('');
+}
 
 function renderResources() {
   const el = document.getElementById('resourceCards');
@@ -621,6 +641,66 @@ function renderResources() {
       + '<div><div class="rsrc-name">' + r.name + '</div><div class="rsrc-desc">' + r.desc + '</div></div>'
       + '</div>';
   }).join('');
+}
+
+// ==============================
+// 面试记录
+// ==============================
+function getInterviews() { const s = localStorage.getItem('interview_records'); return s ? JSON.parse(s) : []; }
+function saveInterviews(d) { localStorage.setItem('interview_records', JSON.stringify(d)); }
+function renderInterviews() {
+  const el = document.getElementById('interviewContent');
+  if (!el) return;
+  const list = getInterviews();
+  const rows = list.map(function(r, i) {
+    return '<tr>'
+      + '<td>' + esc(r.company) + '</td>'
+      + '<td>' + esc(r.job) + '</td>'
+      + '<td>' + esc(r.date) + '</td>'
+      + '<td>' + esc(r.round) + '</td>'
+      + '<td>' + esc(r.result) + '</td>'
+      + '<td style="max-width:280px;word-break:break-all;">' + esc(r.note) + '</td>'
+      + '<td><button class="btn btn-danger btn-sm" onclick="deleteInterview(' + i + ')" title="删除">🗑</button></td>'
+      + '</tr>';
+  }).join('');
+  const empty = list.length === 0
+    ? '<tr><td colspan="7" style="text-align:center;padding:24px;color:#b2bec3;">还没有面试记录——点「➕ 添加面试」记录你的每次面试</td></tr>'
+    : '';
+  el.innerHTML = '<h2 style="margin-bottom:10px;">🎤 面试记录</h2>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">'
+    + '<input id="ivCompany" placeholder="公司" style="padding:7px 10px;border:1.5px solid #dfe6e9;border-radius:8px;font-size:13px;width:140px;">'
+    + '<input id="ivJob" placeholder="岗位" style="padding:7px 10px;border:1.5px solid #dfe6e9;border-radius:8px;font-size:13px;width:140px;">'
+    + '<input id="ivDate" placeholder="日期(如2026-09-01)" style="padding:7px 10px;border:1.5px solid #dfe6e9;border-radius:8px;font-size:13px;width:150px;">'
+    + '<input id="ivRound" placeholder="轮次(一面/二面/HR)" style="padding:7px 10px;border:1.5px solid #dfe6e9;border-radius:8px;font-size:13px;width:130px;">'
+    + '<select id="ivResult" style="padding:7px 10px;border:1.5px solid #dfe6e9;border-radius:8px;font-size:13px;"><option>待反馈</option><option>通过</option><option>挂</option><option>Offer</option><option>放弃</option></select>'
+    + '<input id="ivNote" placeholder="复盘备注" style="flex:1;min-width:160px;padding:7px 10px;border:1.5px solid #dfe6e9;border-radius:8px;font-size:13px;">'
+    + '<button class="btn btn-primary btn-sm" onclick="addInterview()">➕ 添加面试</button>'
+    + '</div>'
+    + '<div style="overflow:auto;"><table><thead><tr><th>公司</th><th>岗位</th><th>日期</th><th>轮次</th><th>结果</th><th>复盘</th><th>操作</th></tr></thead><tbody>' + rows + empty + '</tbody></table></div>';
+}
+function addInterview() {
+  const company = document.getElementById('ivCompany').value.trim();
+  if (!company) { showToast('请至少填写公司名'); return; }
+  const list = getInterviews();
+  list.unshift({
+    company: company,
+    job: document.getElementById('ivJob').value.trim(),
+    date: document.getElementById('ivDate').value.trim(),
+    round: document.getElementById('ivRound').value.trim(),
+    result: document.getElementById('ivResult').value,
+    note: document.getElementById('ivNote').value.trim(),
+    ts: new Date().toISOString()
+  });
+  saveInterviews(list);
+  renderInterviews();
+  showToast('已添加面试记录：' + company);
+}
+function deleteInterview(idx) {
+  const list = getInterviews();
+  list.splice(idx, 1);
+  saveInterviews(list);
+  renderInterviews();
+  showToast('已删除面试记录');
 }
 
 const DEADLINE = '2026-08-17';
@@ -1010,9 +1090,9 @@ function switchTab(tab, el) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
-  if (tab === 'tracking') renderTable();
+  if (tab === 'tracking') { renderSourceCards(); renderTable(); }
   if (tab === 'timeline') renderTimeline();
-  if (tab === 'preparation') { renderResources(); renderCheckin(); }
+  if (tab === 'preparation') { renderResources(); renderCheckin(); renderInterviews(); }
   if (tab === 'match') renderMatch();
 }
 
@@ -1025,10 +1105,12 @@ document.addEventListener('DOMContentLoaded', function() {
   fi.accept = 'application/pdf,image/*,application/msword,.docx';
   fi.onchange = function() { handleResumeFile(fi); };
   document.body.appendChild(fi);
+  renderSourceCards();
   renderTable();
   renderTimeline();
   renderResources();
   renderCheckin();
+  renderInterviews();
   renderMatch();
 });
 </script>
