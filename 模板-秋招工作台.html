@@ -130,8 +130,8 @@ tr.row-mismatch { background:#fafafa; }
 
   <!-- TAB 1: 投递追踪 -->
   <div class="tab-content active" id="tab-tracking">
-    <a href="https://acnr1ayjzqxf.feishu.cn/base/ISNobVuXAagJBFssvszcYeqQnfb?table=tblh7J5ONBOMBEK8&view=vew0zSgYvA" target="_blank" rel="noopener" style="text-decoration:none;">
-      <div class="external-banner">📊 外部：别人整理的秋招投递表（飞书多维表格）→ 点击跳转</div>
+    <a href="https://example.com/你的秋招信息表" target="_blank" rel="noopener" style="text-decoration:none;">
+      <div class="external-banner">📊 外部：秋招信息汇总表（占位）→ 打开HTML搜“外部：”，把链接换成你自己收集的秋招信息表</div>
     </a>
     <div class="stats-row" id="statsRow"></div>
     <div class="filters">
@@ -597,23 +597,30 @@ function resetAllData() {
 // 备考中心：资源 + 打卡
 // ==============================
 const resources = [
-  { name: '八股文·博主资料', icon: '📚', desc: '付费购入·嵌入式面经精讲', url: 'https://icnatmmjsvgx.feishu.cn/wiki/ImjbwjUAGipYbTk34K8ch1tWnah' },
-  { name: '八股文·技术专项', icon: '📖', desc: '自整理·C语言/OS/嵌入式高频考点', url: 'https://xcnhib1ft9lo.feishu.cn/docx/RdTSdI9nJonZJOxw3n0cS1pAnyc' },
-  { name: '非技术面试复盘', icon: '💬', desc: '自整理·自我介绍/HR问答/项目追问', url: 'https://xcnhib1ft9lo.feishu.cn/wiki/Yt3qwvMEMi9Xd1kHr77cxdYPngg' },
-  { name: '力扣学习计划', icon: '💻', desc: 'LeetCode刷题·面试高频必刷', url: 'https://leetcode.cn/studyplan/' },
-  { name: '牛客网·嵌入式题库', icon: '🐮', desc: '嵌入式专项练习·笔试真题', url: 'https://www.nowcoder.com/exam/collection?questionJobId=195&subTabName=xingce_page' },
-  { name: 'GitHub 个人主页', icon: '👤', desc: '把链接换成你自己的 GitHub 主页', url: 'https://github.com' },
-  { name: '简历模板（示例）', icon: '📄', desc: '把链接换成你自己的简历模板文件或在线文档', url: 'https://example.com/你的简历模板' },
-  { name: '模拟面试', icon: '🎤', desc: 'AI模拟面试·真题实战练习', url: 'https://test.lollipop.top/jobs' }
+  { name: '八股文资料（占位）', icon: '📚', desc: '在HTML里搜本卡片，把链接换成你自己的八股资料', url: '' },
+  { name: '技术笔记/八股（占位）', icon: '📖', desc: '在HTML里搜本卡片，把链接换成你自己的笔记或文档', url: '' },
+  { name: '面试复盘笔记（占位）', icon: '💬', desc: '在HTML里搜本卡片，把链接换成你自己的复盘文档', url: '' },
+  { name: '力扣学习计划', icon: '💻', desc: 'LeetCode刷题·面试高频必刷（通用平台）', url: 'https://leetcode.cn/studyplan/' },
+  { name: '牛客网', icon: '🐮', desc: '笔试真题·刷题练习（通用平台）', url: 'https://www.nowcoder.com/' },
+  { name: 'GitHub 主页（占位）', icon: '👤', desc: '在HTML里搜本卡片，把链接换成你自己的 GitHub 主页', url: '' },
+  { name: '简历模板（占位）', icon: '📄', desc: '在HTML里搜本卡片，把链接换成你自己的简历模板', url: '' },
+  { name: '模拟面试（占位）', icon: '🎤', desc: '在HTML里搜本卡片，把链接换成你自己的模拟面试平台', url: '' }
 ];
 
 function renderResources() {
   const el = document.getElementById('resourceCards');
-  el.innerHTML = resources.map(r =>
-    '<a href="' + r.url + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">'
-    + '<div class="rsrc-card" title="点击跳转"><div class="rsrc-icon">' + r.icon + '</div>'
-    + '<div><div class="rsrc-name">' + r.name + '</div><div class="rsrc-desc">' + r.desc + '</div></div>'
-    + '</div></a>').join('');
+  el.innerHTML = resources.map(r => {
+    if (r.url) {
+      return '<a href="' + r.url + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">'
+        + '<div class="rsrc-card" title="点击跳转"><div class="rsrc-icon">' + r.icon + '</div>'
+        + '<div><div class="rsrc-name">' + r.name + '</div><div class="rsrc-desc">' + r.desc + '</div></div>'
+        + '</div></a>';
+    }
+    return '<div class="rsrc-card" title="占位卡片：请打开HTML文件，搜索本卡片名称，把链接替换成你自己的" style="opacity:.72;">'
+      + '<div class="rsrc-icon">' + r.icon + '</div>'
+      + '<div><div class="rsrc-name">' + r.name + '</div><div class="rsrc-desc">' + r.desc + '</div></div>'
+      + '</div>';
+  }).join('');
 }
 
 const DEADLINE = '2026-08-17';
