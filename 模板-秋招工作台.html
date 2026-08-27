@@ -240,7 +240,13 @@ tr.row-mismatch { background:#fafafa; }
 // 数据管理
 // ==============================
 const DATA_VERSION = 99;
-const defaultData = [];
+const defaultData = [
+  { name: '示例公司 A', type: '私企', city: '成都', location: '成都/全国', time: '27届秋招：8月开启', link: 'https://example.com', exam: '是', salary: '面议', status: '未投递', note: '📌 示例数据：展示表格用法，可删掉或改成你自己的公司' },
+  { name: '示例公司 B', type: '国企', city: '重庆', location: '重庆', time: '27届秋招：9月开启', link: 'https://example.com', exam: '待查询', salary: '面议', status: '已投递', note: '📌 示例数据：状态可下拉修改' },
+  { name: '示例公司 C', type: '外企', city: '上海', location: '上海/全国', time: '27届秋招：8月底启动', link: 'https://example.com', exam: '是', salary: '面议', status: '测评中', note: '📌 示例数据：链接可点开、可✏️编辑' },
+  { name: '示例公司 D', type: '央企', city: '北京', location: '北京/全国', time: '27届秋招：9月开放', link: 'https://example.com', exam: '待查询', salary: '面议', status: '未投递', note: '📌 示例数据' },
+  { name: '示例公司 E', type: '事业单位', city: '成都', location: '成都', time: '27届秋招：时间待定', link: 'https://example.com', exam: '待查询', salary: '面议', status: '未开启', note: '📌 示例数据' }
+];
 
 function getData() {
   const s = localStorage.getItem('resume_tracker_data');
