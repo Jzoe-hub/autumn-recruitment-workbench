@@ -154,10 +154,12 @@ tr.row-mismatch { background:#fafafa; }
         <option value="all">📌 全部状态</option>
         <option value="未投递">未投递</option>
         <option value="已投递">已投递</option>
-        <option value="测评中">测评中</option>
+        <option value="简历挂">简历挂</option>
+        <option value="笔试中">笔试中</option>
+        <option value="笔试挂">笔试挂</option>
         <option value="面试中">面试中</option>
-        <option value="已录用">已录用</option>
-        <option value="已拒绝">已拒绝</option>
+        <option value="面试挂">面试挂</option>
+        <option value="拿到offer">🏆 拿到offer</option>
         <option value="未开启">🔒 未开启</option>
         <option value="链接失效">⚠️ 链接失效</option>
         <option value="岗位不符">❌ 岗位不符</option>
@@ -239,11 +241,15 @@ tr.row-mismatch { background:#fafafa; }
 // ==============================
 // 数据管理
 // ==============================
-const DATA_VERSION = 99;
+const DATA_VERSION = 100;
+const OLD_STATUS_MAP = { '测评中':'笔试中', '已录用':'拿到offer', '已拒绝':'简历挂' };
+// 公司名别名 → 标准名（示例：'禾赛': '禾赛科技'。把不同写法合并为一行并保留投递状态）
+const NAME_ALIAS = {};
+
 const defaultData = [
   { name: '示例公司 A', type: '私企', city: '成都', location: '成都/全国', time: '27届秋招：8月开启', link: 'https://example.com', exam: '是', salary: '面议', status: '未投递', note: '📌 示例数据：展示表格用法，可删掉或改成你自己的公司' },
   { name: '示例公司 B', type: '国企', city: '重庆', location: '重庆', time: '27届秋招：9月开启', link: 'https://example.com', exam: '待查询', salary: '面议', status: '已投递', note: '📌 示例数据：状态可下拉修改' },
-  { name: '示例公司 C', type: '外企', city: '上海', location: '上海/全国', time: '27届秋招：8月底启动', link: 'https://example.com', exam: '是', salary: '面议', status: '测评中', note: '📌 示例数据：链接可点开、可✏️编辑' },
+  { name: '示例公司 C', type: '外企', city: '上海', location: '上海/全国', time: '27届秋招：8月底启动', link: 'https://example.com', exam: '是', salary: '面议', status: '笔试中', note: '📌 示例数据：链接可点开、可✏️编辑' },
   { name: '示例公司 D', type: '央企', city: '北京', location: '北京/全国', time: '27届秋招：9月开放', link: 'https://example.com', exam: '待查询', salary: '面议', status: '未投递', note: '📌 示例数据' },
   { name: '示例公司 E', type: '事业单位', city: '成都', location: '成都', time: '27届秋招：时间待定', link: 'https://example.com', exam: '待查询', salary: '面议', status: '未开启', note: '📌 示例数据' }
 ];
@@ -253,9 +259,10 @@ function getData() {
   const v = localStorage.getItem('resume_tracker_version');
   if (!s || parseInt(v || '0') < DATA_VERSION) {
     const oldData = s ? JSON.parse(s) : [];
-    const merged = [...defaultData];
+    let merged = [...defaultData];
+    const canonName = n => NAME_ALIAS[n] || n;
     for (const nd of merged) {
-      const old = oldData.find(o => o.name === nd.name);
+      const old = oldData.find(o => canonName(o.name) === nd.name);
       if (old) {
         if (old.status !== '未投递') nd.status = old.status;
         if (old.resume) nd.resume = old.resume;
@@ -263,11 +270,14 @@ function getData() {
       }
     }
     for (const old of oldData) {
-      if (!merged.find(m => m.name === old.name)) {
+      const cn = canonName(old.name);
+      if (!merged.find(m => m.name === cn)) {
+        old.name = cn;
         if (old.note && old.note.startsWith('📥')) old.note = '';
         merged.push(old);
       }
     }
+    merged = merged.map(m => ({ ...m, status: (OLD_STATUS_MAP[m.status] || m.status) }));
     saveData(merged);
     localStorage.setItem('resume_tracker_version', String(DATA_VERSION));
     return merged;
@@ -359,8 +369,8 @@ function renderLinkCell(d, gi) {
 }
 
 function renderStatusCell(d, gi) {
-  const opts = ['未投递','已投递','测评中','面试中','已录用','已拒绝','未开启','链接失效','岗位不符'];
-  const icons = { '未开启':'🔒 ', '链接失效':'⚠️ ', '岗位不符':'❌ ' };
+  const opts = ['未投递','已投递','简历挂','笔试中','笔试挂','面试中','面试挂','拿到offer','未开启','链接失效','岗位不符'];
+  const icons = { '未开启':'🔒 ', '链接失效':'⚠️ ', '岗位不符':'❌ ', '拿到offer':'🏆 ' };
   return '<select onchange="updateStatus(' + gi + ',this.value)" style="min-width:90px;">'
     + opts.map(o => '<option value="' + o + '" ' + (d.status === o ? 'selected' : '') + '>' + (icons[o] || '') + o + '</option>').join('')
     + '</select>';
@@ -414,15 +424,15 @@ function setSort(t, el) {
 
 function updateStats() {
   const d = getData();
-  const applied = d.filter(x => ['已投递','测评中','面试中','已录用'].includes(x.status)).length;
-  const ing = d.filter(x => x.status === '面试中' || x.status === '测评中').length;
-  const offer = d.filter(x => x.status === '已录用').length;
+  const applied = d.filter(x => ['已投递','简历挂','笔试中','笔试挂','面试中','面试挂','拿到offer'].includes(x.status)).length;
+  const ing = d.filter(x => x.status === '笔试中' || x.status === '面试中').length;
+  const offer = d.filter(x => x.status === '拿到offer').length;
   const pending = d.filter(x => x.status === '未开启' || x.status === '链接失效' || x.status === '岗位不符').length;
   document.getElementById('statsRow').innerHTML =
       '<div class="stat-card"><div class="num">' + d.length + '</div><div class="label">目标单位总数</div></div>'
     + '<div class="stat-card"><div class="num">' + applied + '</div><div class="label">已投递</div></div>'
-    + '<div class="stat-card"><div class="num" style="color:#6c5ce7;">' + ing + '</div><div class="label">面试/测评中</div></div>'
-    + '<div class="stat-card"><div class="num" style="color:#00b894;">' + offer + '</div><div class="label">已录用</div></div>'
+    + '<div class="stat-card"><div class="num" style="color:#6c5ce7;">' + ing + '</div><div class="label">笔试/面试中</div></div>'
+    + '<div class="stat-card"><div class="num" style="color:#00b894;">' + offer + '</div><div class="label">拿到offer</div></div>'
     + '<div class="stat-card"><div class="num" style="color:#b2bec3;">' + pending + '</div><div class="label">未开启/失效/不符</div></div>'
     + '<div class="stat-card"><div class="num">' + d.filter(x=>x.city==='成都').length + '</div><div class="label">⭐ 成都</div></div>'
     + '<div class="stat-card"><div class="num">' + d.filter(x=>x.city==='重庆').length + '</div><div class="label">⭐ 重庆</div></div>'
