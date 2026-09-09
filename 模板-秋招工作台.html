@@ -125,7 +125,7 @@ tr.row-mismatch { background:#fafafa; }
     <button class="tab-btn active" onclick="switchTab('tracking',this)">📋 投递追踪</button>
     <button class="tab-btn" onclick="switchTab('timeline',this)">⏱ 秋招时间线</button>
     <button class="tab-btn" onclick="switchTab('preparation',this)">📝 备战中心</button>
-    <button class="tab-btn" onclick="switchTab('match',this)">🎯 岗位匹配</button>
+    <button class="tab-btn" onclick="switchTab('jobs',this)">🌐 求职网站</button>
   </div>
 
   <!-- TAB 1: 投递追踪 -->
@@ -197,21 +197,10 @@ tr.row-mismatch { background:#fafafa; }
     <div class="checkin-card" id="interviewContent"></div>
   </div>
 
-  <!-- TAB 4: 岗位匹配 -->
-  <div class="tab-content" id="tab-match">
-    <div class="match-panel">
-      <div class="match-left">
-        <div style="background:#f8f9fa;border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.7;">🎯 岗位匹配功能：10 项能力可按你的目标岗位修改（在 HTML 文件中搜索 <b>matchFields</b> 修改能力项与分值），以下是示例</div><div style="background:#f8f9fa;border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.7;">🎯 岗位匹配功能：10 项能力可按你的目标岗位修改（在 HTML 文件中搜索 <b>matchFields</b> 修改能力项与分值），以下是示例</div><div class="form-group"><label>公司名</label><input id="matchCompany" placeholder="如：XX公司"></div>
-        <div class="form-group"><label>岗位名</label><input id="matchJob" placeholder="如：嵌入式软件工程师"></div>
-        <div id="matchItems"></div>
-        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="saveMatch()">💾 保存这条</button>
-          <button class="btn btn-danger" onclick="clearMatch()">清空</button>
-        </div>
-        <div id="matchHistory" style="margin-top:16px;"></div>
-      </div>
-      <div class="match-right" id="matchResult"></div>
-    </div>
+  <!-- TAB 4: 求职网站 -->
+  <div class="tab-content" id="tab-jobs">
+    <div class="resource-cards" id="jobSitesCards"></div>
+    <div class="checkin-card" style="font-size:13px;color:var(--text-secondary);line-height:1.8;">💡 想加新的求职网站？在 HTML 文件中搜索 <b>jobSites</b> 数组，按格式添加卡片即可</div>
   </div>
 </div>
 
@@ -1000,104 +989,25 @@ function renderTimeline() {
 }
 
 // ==============================
-// 岗位匹配
+// 求职网站
 // ==============================
-const matchFields = [
-  { key: 'edu', label: '学历要求', options: [['y','满足'],['p','部分'],['n','不满足']] },
-  { key: 'c', label: 'C语言基础', options: [['y','熟练'],['p','一般'],['n','薄弱']] },
-  { key: 'stm32', label: 'STM32开发', options: [['y','做过项目'],['p','了解'],['n','不会']] },
-  { key: 'rtos', label: 'FreeRTOS/RTOS', options: [['y','熟练'],['p','了解'],['n','不会']] },
-  { key: 'proto', label: '通信协议(UART/I2C/SPI/MQTT)', options: [['y','熟练'],['p','了解'],['n','不会']] },
-  { key: 'bsp', label: 'BSP/驱动开发', options: [['y','做过'],['p','了解'],['n','不会']] },
-  { key: 'linux', label: 'Linux基础', options: [['y','熟练'],['p','了解'],['n','不会']] },
-  { key: 'hw', label: '硬件基础(电路/PCB)', options: [['y','熟练'],['p','了解'],['n','不会']] },
-  { key: 'eng', label: '英语能力', options: [['y','CET-6+'],['p','CET-4'],['n','未过级']] },
-  { key: 'proj', label: '项目经历', options: [['y','对口项目'],['p','相关'],['n','无关']] }
+const jobSites = [
+  { name: 'Boss直聘', icon: '💼', desc: 'BOSS直聘·校招/实习/正式岗', url: 'https://www.zhipin.com/?ka=header-home-logo' },
+  { name: '智联招聘', icon: '📄', desc: '智联招聘·校招/社招', url: 'https://www.zhaopin.com/' },
+  { name: '前程无忧', icon: '🌐', desc: '前程无忧 51job·校招/社招', url: 'https://www.51job.com/' },
+  { name: '应届生求职网', icon: '🎓', desc: '应届生求职网·校园招聘/宣讲会/实习', url: 'https://www.yingjiesheng.com/' },
+  { name: '川e就', icon: '🏛️', desc: '川e就·四川大学生就业服务平台（四川省官方）', url: 'https://bigdata.scbdc.edu.cn:8888/' }
 ];
-let matchScores = {};
-
-function renderMatch() {
-  const el = document.getElementById('matchItems');
-  el.innerHTML = matchFields.map(f =>
-    '<div class="match-item"><label>' + f.label + '</label>'
-    + '<select onchange="setMatchValue(\'' + f.key + '\',this.value)">'
-    + '<option value="">-- 选择 --</option>'
-    + f.options.map(o => '<option value="' + o[0] + '" ' + (matchScores[f.key] === o[0] ? 'selected' : '') + '>' + o[1] + '</option>').join('')
-    + '</select></div>').join('');
-  calcMatch();
-}
-function setMatchValue(k, v) { matchScores[k] = v; calcMatch(); }
-function calcMatch() {
-  const vals = Object.keys(matchScores).map(k => ({ k, v: matchScores[k] }));
-  const filled = vals.filter(x => x.v);
-  const score = filled.reduce((s, x) => s + (x.v === 'y' ? 2 : x.v === 'p' ? 1 : 0), 0);
-  const max = filled.length * 2;
-  const pct = max ? Math.round(score / max * 100) : 0;
-  const gaps = matchFields.filter(f => matchScores[f.key] === 'n').map(f => f.label);
-  const parts = filled.length ? '' : '（请先选择各项能力）';
-  let grade, color;
-  if (!filled.length) { grade = '待评估'; color = '#b2bec3'; }
-  else if (pct >= 80) { grade = '高匹配 ✅'; color = '#00b894'; }
-  else if (pct >= 60) { grade = '中匹配 ⚠️'; color = '#fdcb6e'; }
-  else if (pct >= 40) { grade = '偏低匹配'; color = '#e17055'; }
-  else { grade = '低匹配 ❌'; color = '#d63031'; }
-  document.getElementById('matchResult').innerHTML =
-    '<h2>🎯 ' + esc(document.getElementById('matchCompany').value || '公司') + '</h2>'
-    + '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">' + esc(document.getElementById('matchJob').value || '岗位') + '</div>'
-    + '<div class="badge" style="background:' + color + ';color:#fff;">' + grade + '</div>'
-    + '<div style="font-size:34px;font-weight:800;margin:12px 0;">' + pct + '%</div>'
-    + '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">已评估 ' + filled.length + '/10 项' + parts + '</div>'
-    + (gaps.length ? '<div style="font-size:13px;background:#fff5f5;border-radius:8px;padding:10px;">❌ 短板：' + gaps.join('、') + '</div>' : '')
-    + renderMatchHistory();
-}
-function saveMatch() {
-  const history = JSON.parse(localStorage.getItem('match_history') || '[]');
-  const filled = Object.keys(matchScores).filter(k => matchScores[k]).length;
-  const score = Object.keys(matchScores).reduce((s, k) => s + (matchScores[k] === 'y' ? 2 : matchScores[k] === 'p' ? 1 : 0), 0);
-  const pct = filled ? Math.round(score / (filled * 2) * 100) : 0;
-  history.push({
-    company: document.getElementById('matchCompany').value,
-    job: document.getElementById('matchJob').value,
-    pct: pct,
-    scores: Object.assign({}, matchScores),
-    ts: new Date().toISOString()
-  });
-  localStorage.setItem('match_history', JSON.stringify(history));
-  calcMatch();
-  showToast('已保存匹配记录');
-}
-function clearMatch() {
-  matchScores = {};
-  document.getElementById('matchCompany').value = '';
-  document.getElementById('matchJob').value = '';
-  renderMatch();
-}
-function renderMatchHistory() {
-  const history = JSON.parse(localStorage.getItem('match_history') || '[]');
-  if (!history.length) return '';
-  let html = '<div style="margin-top:18px;"><h3 style="font-size:14px;margin-bottom:8px;">📋 历史记录</h3>';
-  html += history.slice(-10).reverse().map((h, i) => {
-    const idx = history.length - 1 - i;
-    return '<div style="display:flex;align-items:center;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px dashed #eee;">'
-      + '<span style="font-weight:700;">' + esc(h.company) + '</span>'
-      + '<span style="color:var(--text-secondary);">' + esc(h.job || '') + '</span>'
-      + '<span style="color:var(--primary);font-weight:700;">' + h.pct + '%</span>'
-      + '<button class="btn btn-outline btn-sm" style="margin-left:auto;color:var(--text);border-color:var(--border);" onclick="loadMatch(' + idx + ')">加载</button>'
-      + '</div>';
+function renderJobSites() {
+  const el = document.getElementById('jobSitesCards');
+  if (!el) return;
+  el.innerHTML = jobSites.map(function(r) {
+    return '<a href="' + r.url + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">'
+      + '<div class="rsrc-card" title="点击跳转"><div class="rsrc-icon">' + r.icon + '</div>'
+      + '<div><div class="rsrc-name">' + r.name + '</div><div class="rsrc-desc">' + r.desc + '</div></div>'
+      + '</div></a>';
   }).join('');
-  return html + '</div>';
 }
-function loadMatch(idx) {
-  const history = JSON.parse(localStorage.getItem('match_history') || '[]');
-  const h = history[idx];
-  if (!h) return;
-  matchScores = Object.assign({}, h.scores || {});
-  document.getElementById('matchCompany').value = h.company || '';
-  document.getElementById('matchJob').value = h.job || '';
-  renderMatch();
-  showToast('已加载：' + h.company);
-}
-
 // ==============================
 // Tab 切换 & 初始化
 // ==============================
@@ -1109,7 +1019,7 @@ function switchTab(tab, el) {
   if (tab === 'tracking') { renderSourceCards(); renderTable(); }
   if (tab === 'timeline') renderTimeline();
   if (tab === 'preparation') { renderResources(); renderCheckin(); renderInterviews(); }
-  if (tab === 'match') renderMatch();
+  if (tab === 'jobs') renderJobSites();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1127,7 +1037,7 @@ document.addEventListener('DOMContentLoaded', function() {
   renderResources();
   renderCheckin();
   renderInterviews();
-  renderMatch();
+  renderJobSites();
 });
 </script>
 </body>
